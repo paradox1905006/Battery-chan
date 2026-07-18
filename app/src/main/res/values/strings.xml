@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Battery Chan</string>
+    <string name="indeterminate">-</string>
+    <string name="fully_charged">fully charged</string>
+</resources>

@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.BatteryChan" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/oni_purple</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/oni_pink</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:windowBackground">@color/oni_bg</item>
+        <item name="android:statusBarColor">@color/oni_bg</item>
+        <item name="android:navigationBarColor">@color/oni_bg</item>
+    </style>
+
+    <style name="Theme.BatteryChan.PopUp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/oni_bg</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+</resources>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_event_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event Name"
+            android:textColor="@color/oni_purple"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_pick_audio"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pick Audio" />
+
+            <ImageButton
+                android:id="@+id/btn_remove_audio"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_audio_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No audio selected"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_pick_image"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pick Image" />
+
+            <ImageButton
+                android:id="@+id/btn_remove_image"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_image_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No image selected"
+            android:textSize="12sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Custom Message"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_event_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_test_event"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Test" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

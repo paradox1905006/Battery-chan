@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/oni_bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/oni_purple"
+            app:title="Settings"
+            app:titleTextColor="@color/white"
+            app:navigationIcon="@drawable/ic_back" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_global_events"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enable Battery Events"
+                android:checked="true"
+                android:padding="8dp" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_auto_dismiss_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Auto-dismiss after audio ends"
+                android:checked="false"
+                android:padding="8dp" />
+
+            <!-- Repeat this for 4 events -->
+            <include android:id="@+id/section_low_battery" layout="@layout/item_event_settings" />
+            <include android:id="@+id/section_charging" layout="@layout/item_event_settings" />
+            <include android:id="@+id/section_full_charge" layout="@layout/item_event_settings" />
+            <include android:id="@+id/section_unplugged" layout="@layout/item_event_settings" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Notification Duration (seconds)" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="5"
+                android:valueTo="30"
+                android:stepSize="1"
+                android:value="10" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/oni_card_bg"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Power Indicator"
+                        android:textColor="@color/oni_purple"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Ported from Wattz: shows a live battery reading right in the status bar."
+                        android:textColor="@color/oni_text_secondary"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_power_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:checked="false"
+                        android:padding="8dp"
+                        android:text="Show live power indicator" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Indicator Units"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_units"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_unit_v"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="V" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_unit_wh"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Wh" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_unit_ah"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ah" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_unit_c"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="°C" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_unit_percent"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="%" />
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:text="App Version: 1.0.6\nMade by Paradox\nDetailed stats &amp; power indicator ported from Wattz"
+                android:textColor="@color/oni_purple" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

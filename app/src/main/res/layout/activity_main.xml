@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/oni_bg"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/oni_bg"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Battery Chan"
+            app:titleTextColor="@color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/oni_card_bg"
+                app:cardCornerRadius="28dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp">
+
+                    <FrameLayout
+                        android:layout_width="220dp"
+                        android:layout_height="220dp">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/battery_progress_circular"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:progress="0"
+                            app:indicatorColor="@color/oni_accent"
+                            app:indicatorSize="220dp"
+                            app:trackColor="#33FFFFFF"
+                            app:trackThickness="16dp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_battery_percentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="--%"
+                                android:textColor="@color/white"
+                                android:textSize="48sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_charging_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Checking..."
+                                android:textColor="@color/oni_text_secondary"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/oni_card_bg"
+                app:cardCornerRadius="20dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Detailed Stats"
+                        android:textColor="@color/oni_accent"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Voltage"
+                            android:textColor="@color/oni_text_secondary"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_voltage_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/indeterminate"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Energy"
+                            android:textColor="@color/oni_text_secondary"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_energy_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/indeterminate"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Temperature"
+                            android:textColor="@color/oni_text_secondary"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_temperature_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/indeterminate"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Charging Since"
+                            android:textColor="@color/oni_text_secondary"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_charging_since_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/indeterminate"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Time to Full"
+                            android:textColor="@color/oni_text_secondary"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_time_to_full_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/indeterminate"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_toggle_service"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginTop="16dp"
+                android:text="Enable Monitor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_battery_full"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_settings"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginTop="16dp"
+                android:text="Personalize Events"
+                android:textSize="16sp"
+                app:cornerRadius="24dp"
+                app:icon="@android:drawable/ic_menu_manage"
+                app:iconGravity="textStart" />
+
+            <TextView
+                android:id="@+id/tv_optimization_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/bg_warning"
+                android:padding="16dp"
+                android:text="⚠️ Battery optimization is active. For best performance and instant alerts, please click here to disable it."
+                android:textColor="#FFCDD2"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
