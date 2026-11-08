@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/oni_bg"
-    android:fitsSystemWindows="true"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Material3.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/oni_bg"
-        app:elevation="0dp">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Battery Chan"
-            app:titleTextColor="@color/white" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        app:title="@string/app_name"
+        app:titleTextAppearance="?attr/textAppearanceTitleLarge" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
 
             <com.google.android.material.card.MaterialCardView
+                style="?attr/materialCardViewFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/oni_card_bg"
-                app:cardCornerRadius="28dp"
-                app:strokeWidth="0dp">
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardCornerRadius="28dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,9 +53,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:progress="0"
-                            app:indicatorColor="@color/oni_accent"
+                            app:indicatorColor="?attr/colorPrimary"
                             app:indicatorSize="220dp"
-                            app:trackColor="#33FFFFFF"
+                            app:trackColor="?attr/colorSurfaceVariant"
+                            app:trackCornerRadius="8dp"
                             app:trackThickness="16dp" />
 
                         <LinearLayout
@@ -73,8 +71,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="--%"
-                                android:textColor="@color/white"
-                                android:textSize="48sp"
+                                android:textAppearance="?attr/textAppearanceDisplayMedium"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -82,20 +80,72 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Checking..."
-                                android:textColor="@color/oni_text_secondary"
-                                android:textSize="16sp" />
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="?attr/colorOnSurfaceVariant" />
                         </LinearLayout>
                     </FrameLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Live watt meter: how many watts the phone is charging / draining at right now. -->
             <com.google.android.material.card.MaterialCardView
+                style="?attr/materialCardViewFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/oni_card_bg"
-                app:cardCornerRadius="20dp"
-                app:strokeWidth="0dp">
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardCornerRadius="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Live watt meter"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/tv_live_power_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="-- W"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_live_power_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reading..."
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tv_live_power_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text=""
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardCornerRadius="24dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -107,23 +157,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="Detailed Stats"
-                        android:textColor="@color/oni_accent"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:text="Detailed stats"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorPrimary" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="6dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Voltage"
-                            android:textColor="@color/oni_text_secondary"
-                            android:textSize="14sp" />
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
                         <TextView
                             android:id="@+id/tv_voltage_value"
                             android:layout_width="0dp"
@@ -131,9 +182,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/indeterminate"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -141,13 +191,15 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="6dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Energy"
-                            android:textColor="@color/oni_text_secondary"
-                            android:textSize="14sp" />
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
                         <TextView
                             android:id="@+id/tv_energy_value"
                             android:layout_width="0dp"
@@ -155,9 +207,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/indeterminate"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -165,13 +216,15 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="6dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Temperature"
-                            android:textColor="@color/oni_text_secondary"
-                            android:textSize="14sp" />
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
                         <TextView
                             android:id="@+id/tv_temperature_value"
                             android:layout_width="0dp"
@@ -179,9 +232,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/indeterminate"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -189,13 +241,15 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="6dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Charging Since"
-                            android:textColor="@color/oni_text_secondary"
-                            android:textSize="14sp" />
+                            android:text="Charging since"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
                         <TextView
                             android:id="@+id/tv_charging_since_value"
                             android:layout_width="0dp"
@@ -203,9 +257,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/indeterminate"
-                            android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -213,13 +266,15 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="6dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Time to Full"
-                            android:textColor="@color/oni_text_secondary"
-                            android:textSize="14sp" />
+                            android:text="Time to full"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
                         <TextView
                             android:id="@+id/tv_time_to_full_value"
                             android:layout_width="0dp"
@@ -227,9 +282,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/indeterminate"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -238,12 +292,10 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_toggle_service"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="12dp"
                 android:text="Enable Monitor"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:cornerRadius="24dp"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:icon="@drawable/ic_battery_full"
                 app:iconGravity="textStart" />
 
@@ -251,27 +303,25 @@
                 android:id="@+id/btn_settings"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginTop="16dp"
-                android:text="Personalize Events"
-                android:textSize="16sp"
-                app:cornerRadius="24dp"
-                app:icon="@android:drawable/ic_menu_manage"
+                android:layout_height="64dp"
+                android:layout_marginTop="8dp"
+                android:text="Personalize events"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:icon="@drawable/ic_settings"
                 app:iconGravity="textStart" />
 
             <TextView
                 android:id="@+id/tv_optimization_warning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:background="@drawable/bg_warning"
                 android:padding="16dp"
-                android:text="⚠️ Battery optimization is active. For best performance and instant alerts, please click here to disable it."
-                android:textColor="#FFCDD2"
-                android:textSize="14sp"
+                android:text="Battery optimization is active. For instant alerts, tap here to disable it for this app."
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnErrorContainer"
                 android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

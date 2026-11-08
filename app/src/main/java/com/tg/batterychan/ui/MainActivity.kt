@@ -4,7 +4,7 @@ import android.content.*
 import android.os.BatteryManager
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.color.MaterialColors
 import androidx.core.content.ContextCompat
 import com.tg.batterychan.R
 import com.tg.batterychan.data.Prefs
@@ -18,7 +18,12 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
+
+    private companion object {
+        const val GREEN = 0xFF2E9E5B.toInt()
+        const val ORANGE = 0xFFE8803A.toInt()
+    }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var prefs: Prefs
@@ -55,9 +60,13 @@ class MainActivity : AppCompatActivity() {
             binding.tvChargingStatus.text = if (isCharging) "Charging" else "Discharging"
             
             val color = when {
-                batteryPct <= 20 -> android.graphics.Color.RED
-                batteryPct >= 90 -> android.graphics.Color.GREEN
-                else -> ContextCompat.getColor(context, R.color.oni_accent)
+                batteryPct <= 20 -> MaterialColors.getColor(
+                    binding.root, androidx.appcompat.R.attr.colorError
+                )
+                batteryPct >= 90 -> MaterialColors.harmonizeWithPrimary(context, GREEN)
+                else -> MaterialColors.getColor(
+                    binding.root, androidx.appcompat.R.attr.colorPrimary
+                )
             }
             binding.batteryProgressCircular.setIndicatorColor(color)
 
@@ -72,6 +81,8 @@ class MainActivity : AppCompatActivity() {
     private fun refreshDetailedStats() {
         val snapshot = battery.snapshot()
         val indeterminate = getString(R.string.indeterminate)
+
+        updateLivePower(snapshot)
 
         // Removed absolute values for Power and Current
         binding.tvVoltageValue.text = fmt(snapshot.volts) + "V"
@@ -88,10 +99,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Live watt meter. Power is shown as a positive number; the label says which way the
+    // energy is flowing. Direction comes from the plug state (not the current's sign) so
+    // it stays right on phones that report current backwards.
+    private fun updateLivePower(snapshot: com.tg.batterychan.metrics.BatterySnapshot) {
+        val watts = snapshot.watts
+        if (watts == null) {
+            binding.tvLivePowerValue.text = "-- W"
+            binding.tvLivePowerLabel.text = "Not supported on this phone"
+            binding.tvLivePowerDetail.text = ""
+            return
+        }
+
+        val plugged = snapshot.isChargingRaw || snapshot.plugType != null
+        val absWatts = kotlin.math.abs(watts)
+        binding.tvLivePowerValue.text = "%.2f W".format(absWatts)
+        binding.tvLivePowerLabel.text = if (plugged) "Charging" else "Draining"
+        binding.tvLivePowerLabel.setTextColor(if (plugged) GREEN else ORANGE)
+
+        val mA = snapshot.milliamps?.let { kotlin.math.abs(it) }
+        binding.tvLivePowerDetail.text = "${fmt(mA)} mA \u00B7 ${fmt(snapshot.volts)} V"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applySystemBarInsets(binding.root)
         
         prefs = Prefs(this)
         battery = Battery(this)
@@ -179,11 +213,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateServiceButton() {
         val isRunning = prefs.isServiceEnabled()
-        binding.btnToggleService.text = if (isRunning) "Stop Monitor" else "Enable Monitor"
-        binding.btnToggleService.setBackgroundColor(
-            if (isRunning) ContextCompat.getColor(this, android.R.color.holo_red_dark)
-            else ContextCompat.getColor(this, R.color.oni_purple)
-        )
+        val button = binding.btnToggleService
+        button.text = if (isRunning) "Stop Monitor" else "Enable Monitor"
+        val container = if (isRunning) {
+            com.google.android.material.R.attr.colorErrorContainer
+        } else {
+            androidx.appcompat.R.attr.colorPrimary
+        }
+        val content = if (isRunning) {
+            com.google.android.material.R.attr.colorOnErrorContainer
+        } else {
+            com.google.android.material.R.attr.colorOnPrimary
+        }
+        button.backgroundTintList =
+            android.content.res.ColorStateList.valueOf(MaterialColors.getColor(button, container))
+        val onColor = MaterialColors.getColor(button, content)
+        button.setTextColor(onColor)
+        button.iconTint = android.content.res.ColorStateList.valueOf(onColor)
     }
 
     override fun onResume() {

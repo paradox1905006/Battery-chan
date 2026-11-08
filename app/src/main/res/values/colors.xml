@@ -1,20 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-    <color name="oni_pink">#FF80AB</color>
-    <color name="oni_purple">#6200EA</color>
-    <color name="oni_purple_light">#D1C4E9</color>
-    <color name="oni_bg">#0F0F0F</color>
-    <color name="oni_card_bg">#1A1A1A</color>
-    <color name="oni_text_primary">#FFFFFF</color>
-    <color name="oni_text_secondary">#B0B0B0</color>
-    <color name="oni_accent">#00E5FF</color>
     <color name="ic_launcher_background">#000000</color>
+
+    <!-- Material 3 light scheme (used when dynamic color is off or unavailable) -->
+    <color name="m3_light_primary">#6750A4</color>
+    <color name="m3_light_on_primary">#FFFFFF</color>
+    <color name="m3_light_primary_container">#EADDFF</color>
+    <color name="m3_light_on_primary_container">#21005D</color>
+    <color name="m3_light_secondary">#625B71</color>
+    <color name="m3_light_on_secondary">#FFFFFF</color>
+    <color name="m3_light_secondary_container">#E8DEF8</color>
+    <color name="m3_light_on_secondary_container">#1D192B</color>
+    <color name="m3_light_tertiary">#7D5260</color>
+    <color name="m3_light_on_tertiary">#FFFFFF</color>
+    <color name="m3_light_tertiary_container">#FFD8E4</color>
+    <color name="m3_light_on_tertiary_container">#31111D</color>
+    <color name="m3_light_error">#B3261E</color>
+    <color name="m3_light_on_error">#FFFFFF</color>
+    <color name="m3_light_error_container">#F9DEDC</color>
+    <color name="m3_light_on_error_container">#410E0B</color>
+    <color name="m3_light_surface">#FEF7FF</color>
+    <color name="m3_light_on_surface">#1D1B20</color>
+    <color name="m3_light_surface_variant">#E7E0EC</color>
+    <color name="m3_light_on_surface_variant">#49454F</color>
+    <color name="m3_light_outline">#79747E</color>
+    <color name="m3_light_outline_variant">#CAC4D0</color>
+    <color name="m3_light_surface_container_lowest">#FFFFFF</color>
+    <color name="m3_light_surface_container_low">#F7F2FA</color>
+    <color name="m3_light_surface_container">#F3EDF7</color>
+    <color name="m3_light_surface_container_high">#ECE6F0</color>
+    <color name="m3_light_surface_container_highest">#E6E0E9</color>
+
+    <!-- Material 3 dark scheme -->
+    <color name="m3_dark_primary">#D0BCFF</color>
+    <color name="m3_dark_on_primary">#381E72</color>
+    <color name="m3_dark_primary_container">#4F378B</color>
+    <color name="m3_dark_on_primary_container">#EADDFF</color>
+    <color name="m3_dark_secondary">#CCC2DC</color>
+    <color name="m3_dark_on_secondary">#332D41</color>
+    <color name="m3_dark_secondary_container">#4A4458</color>
+    <color name="m3_dark_on_secondary_container">#E8DEF8</color>
+    <color name="m3_dark_tertiary">#EFB8C8</color>
+    <color name="m3_dark_on_tertiary">#492532</color>
+    <color name="m3_dark_tertiary_container">#633B48</color>
+    <color name="m3_dark_on_tertiary_container">#FFD8E4</color>
+    <color name="m3_dark_error">#F2B8B5</color>
+    <color name="m3_dark_on_error">#601410</color>
+    <color name="m3_dark_error_container">#8C1D18</color>
+    <color name="m3_dark_on_error_container">#F9DEDC</color>
+    <color name="m3_dark_surface">#141218</color>
+    <color name="m3_dark_on_surface">#E6E0E9</color>
+    <color name="m3_dark_surface_variant">#49454F</color>
+    <color name="m3_dark_on_surface_variant">#CAC4D0</color>
+    <color name="m3_dark_outline">#938F99</color>
+    <color name="m3_dark_outline_variant">#49454F</color>
+    <color name="m3_dark_surface_container_lowest">#0F0D13</color>
+    <color name="m3_dark_surface_container_low">#1D1B20</color>
+    <color name="m3_dark_surface_container">#211F26</color>
+    <color name="m3_dark_surface_container_high">#2B2930</color>
+    <color name="m3_dark_surface_container_highest">#36343B</color>
+
+    <!-- Pure black (AMOLED) surfaces -->
+    <color name="amoled_surface">#000000</color>
+    <color name="amoled_container_lowest">#000000</color>
+    <color name="amoled_container_low">#0A0A0A</color>
+    <color name="amoled_container">#101010</color>
+    <color name="amoled_container_high">#181818</color>
+    <color name="amoled_container_highest">#202020</color>
 </resources>

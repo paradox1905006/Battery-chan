@@ -64,6 +64,17 @@ class Battery(private val ctx: Context) {
             }
         }
 
+        // Android says CURRENT_NOW is in microamps, but many phones actually report milliamps.
+        // A real microamp reading while the phone is in use is tens of thousands or more
+        // (50 mA = 50000 uA), while a milliamp reading never gets near 10000 (10 A), so a
+        // small magnitude means the value is really mA. Skipped when the user has picked a
+        // manual power-scalar workaround, so that setting always wins.
+        val rawCurrent = current
+        if (currentScalar == 1.0 && rawCurrent != null) {
+            val magnitude = Math.abs(rawCurrent)
+            if (magnitude in 1L..9999L) current = rawCurrent * 1000L
+        }
+
         val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)?.takeIf { it != -1 }?.toDouble()
         val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1)?.takeIf { it != -1 }?.toDouble()
         val voltage = intent?.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1)?.takeIf { it != -1 }?.toLong()

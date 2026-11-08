@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.tg.batterychan.data.Prefs
 import com.tg.batterychan.service.BatteryService
+import com.tg.batterychan.service.MiniPlayerController
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -23,6 +24,9 @@ class BootReceiver : BroadcastReceiver() {
                     e.printStackTrace()
                 }
             }
+
+            // Bring the home screen mini player back after a reboot / app update.
+            if (prefs.isMiniEnabled() || prefs.isSpeedInNotification()) MiniPlayerController.sync(context)
         }
     }
 }

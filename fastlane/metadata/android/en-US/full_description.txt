@@ -1,0 +1,31 @@
+Battery Chan turns battery milestones into personal pop-up alerts, with your own image, sound and message for each one.
+
+<b>Custom events</b>
+Create your own events at any battery level from 1 to 100%. For example: "at 80% while charging, play this sound and show this picture". Each event can fire while charging up, while draining, or both. Edit, disable or delete them any time.
+
+<b>Built-in events</b>
+- Low battery (20%)
+- Charger connected
+- Full charge (100%)
+- Charger unplugged
+
+<b>Battery details</b>
+- Live voltage, energy (Wh / Ah) and temperature
+- "Charging since" and time-to-full estimate
+- Optional live reading in the status bar (V, Wh, Ah, °C or %)
+
+<b>Look and feel</b>
+- Material 3 design with Material You dynamic color on Android 12+
+- System, Light, Dark and pure black (AMOLED) themes
+
+<b>Privacy</b>
+No ads, no analytics, no accounts and no network access. Your images and sounds are copied into the app's private storage and never leave your device.
+
+<b>Permissions</b>
+- Notifications: event alerts and the monitor notification
+- Display over other apps: show the pop-up on top of whatever you are doing
+- Ignore battery optimization: keep the monitor alive in the background
+
+Parts of the battery metrics engine are adapted from Wattz (MIT) by dubrowgn.
+
+Source code is available under the MIT license.

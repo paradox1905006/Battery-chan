@@ -1,0 +1,5 @@
+* Custom events: pick any battery level, trigger direction, image, sound and message
+* Per-event on/off switches
+* Material 3 design, Material You colors, Light / Dark / Black themes
+* Fixed doubled sound (echo) when testing events
+* Much smaller app size

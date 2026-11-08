@@ -2,4 +2,6 @@
     <string name="app_name">Battery Chan</string>
     <string name="indeterminate">-</string>
     <string name="fully_charged">fully charged</string>
+    <string name="accessibility_label">Battery Chan mini player</string>
+    <string name="accessibility_description">Lets the mini player tell the home screen apart from the app drawer so it can hide while the drawer is open. It only looks at your launcher and does not store or send anything.</string>
 </resources>

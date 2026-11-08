@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -20,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.tg.batterychan.R
 import com.tg.batterychan.data.BatteryEvent
+import com.tg.batterychan.data.CustomEvent
 import com.tg.batterychan.data.Prefs
 import com.tg.batterychan.metrics.Battery
 import com.tg.batterychan.metrics.BatterySnapshot
@@ -29,7 +29,7 @@ import com.tg.batterychan.metrics.fmtSeconds
 import com.tg.batterychan.receiver.BootReceiver
 import com.tg.batterychan.ui.MainActivity
 import com.tg.batterychan.ui.PopUpActivity
-import java.io.File
+import com.tg.batterychan.util.NotificationHelper
 
 class BatteryService : Service() {
 
@@ -44,9 +44,7 @@ class BatteryService : Service() {
     private lateinit var prefs: Prefs
     private var lastLevel = -1
     private var lastStatus = -1
-    private val CHANNEL_ID = "battery_events_channel"
     private val NOTIFICATION_ID = 1
-    private val METRICS_CHANNEL_ID = "power_status_channel"
     private val METRICS_NOTIFICATION_ID = 2
 
     // --- Ported detailed-metrics engine (from Wattz) ---
@@ -69,11 +67,11 @@ class BatteryService : Service() {
             when (intent.action) {
                 Intent.ACTION_BATTERY_CHANGED -> handleBatteryChange(intent)
                 Intent.ACTION_POWER_CONNECTED -> {
-                    triggerEvent(BatteryEvent.CHARGING_CONNECTED)
+                    triggerEvent(BatteryEvent.CHARGING_CONNECTED.key, BatteryEvent.CHARGING_CONNECTED.displayName)
                 }
                 Intent.ACTION_POWER_DISCONNECTED -> {
                     if (lastLevel < 100) {
-                        triggerEvent(BatteryEvent.CHARGER_UNPLUGGED)
+                        triggerEvent(BatteryEvent.CHARGER_UNPLUGGED.key, BatteryEvent.CHARGER_UNPLUGGED.displayName)
                     }
                 }
                 ACTION_METRICS_SETTINGS_CHANGED -> {
@@ -95,8 +93,7 @@ class BatteryService : Service() {
     override fun onCreate() {
         super.onCreate()
         prefs = Prefs(this)
-        createNotificationChannel()
-        createMetricsNotificationChannel()
+        NotificationHelper.ensureChannels(this)
 
         battery = Battery(applicationContext)
         loadMetricsPrefs()
@@ -157,14 +154,19 @@ class BatteryService : Service() {
             val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                              status == BatteryManager.BATTERY_STATUS_FULL
 
-            // Low Battery (<= 20%)
-            if (level <= 20 && lastLevel > 20) {
-                triggerEvent(BatteryEvent.LOW_BATTERY)
-            }
+            if (level != lastLevel && lastLevel != -1) {
+                // Low Battery (<= 20%)
+                if (level <= 20 && lastLevel > 20) {
+                    triggerEvent(BatteryEvent.LOW_BATTERY.key, BatteryEvent.LOW_BATTERY.displayName)
+                }
 
-            // Full Charge (100%)
-            if (level == 100 && lastLevel < 100 && isCharging) {
-                triggerEvent(BatteryEvent.FULL_CHARGE)
+                // Full Charge (100%)
+                if (level == 100 && lastLevel < 100 && isCharging) {
+                    triggerEvent(BatteryEvent.FULL_CHARGE.key, BatteryEvent.FULL_CHARGE.displayName)
+                }
+
+                // User-defined events (e.g. "at 80% while charging")
+                checkCustomEvents(lastLevel, level, isCharging)
             }
 
             updateForegroundNotification(level, isCharging)
@@ -173,51 +175,52 @@ class BatteryService : Service() {
         }
     }
 
-    private fun triggerEvent(event: BatteryEvent) {
+    private fun checkCustomEvents(oldLevel: Int, newLevel: Int, isCharging: Boolean) {
+        for (event in prefs.getCustomEvents()) {
+            if (event.matches(oldLevel, newLevel, isCharging)) {
+                triggerCustomEvent(event)
+            }
+        }
+    }
+
+    private fun triggerCustomEvent(event: CustomEvent) {
+        triggerEvent(event.key, event.name)
+    }
+
+    private fun triggerEvent(key: String, title: String) {
         try {
             if (!prefs.isGlobalEventsEnabled()) return
+            if (!prefs.isEventEnabled(key)) return
 
-            val audioPath = prefs.getFilePath(event, Prefs.FileType.AUDIO)
-            val imagePath = prefs.getFilePath(event, Prefs.FileType.IMAGE)
-            val customText = prefs.getEventText(event)
+            val audioPath = prefs.getFilePath(key, Prefs.FileType.AUDIO)
+            val imagePath = prefs.getFilePath(key, Prefs.FileType.IMAGE)
+            val customText = prefs.getEventText(key)
 
-            showEventNotification(event, imagePath)
-            popUpEvent(event, imagePath, audioPath, customText)
+            NotificationHelper.showEvent(this, key, title, customText, imagePath)
+            popUpEvent(title, imagePath, audioPath, customText, prefs.getEventScale(key, imagePath))
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun popUpEvent(event: BatteryEvent, imagePath: String?, audioPath: String?, customText: String?) {
+    private fun popUpEvent(
+        title: String,
+        imagePath: String?,
+        audioPath: String?,
+        customText: String?,
+        scaleMode: Int
+    ) {
         val intent = Intent(this, PopUpActivity::class.java).apply {
-            putExtra("event_title", event.displayName)
+            putExtra("event_title", title)
             putExtra("image_path", imagePath)
             putExtra("audio_path", audioPath)
             putExtra("custom_text", customText)
+            putExtra("scale_mode", scaleMode)
             putExtra("duration", prefs.getNotificationDuration())
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)
-    }
-
-    private fun showEventNotification(event: BatteryEvent, imagePath: String?) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_battery_alert)
-            .setContentTitle("Battery Event")
-            .setContentText(event.displayName)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setAutoCancel(true)
-
-        if (imagePath != null && File(imagePath).exists()) {
-            val bitmap = BitmapFactory.decodeFile(imagePath)
-            builder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
-        }
-
-        notificationManager.notify(event.ordinal + 10, builder.build())
     }
 
     private fun createForegroundNotification(level: Int, isCharging: Boolean): Notification {
@@ -226,10 +229,11 @@ class BatteryService : Service() {
 
         val statusText = if (isCharging) "Charging" else "Not Charging"
         
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat.Builder(this, NotificationHelper.CHANNEL_MONITOR)
             .setContentTitle("Battery Chan Monitor")
             .setContentText("Battery: $level% ($statusText)")
-            .setSmallIcon(R.drawable.ic_battery_full) // Need to create this
+            .setSmallIcon(R.drawable.ic_battery_full)
+            .setSilent(true)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .build()
@@ -285,7 +289,7 @@ class BatteryService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        metricsNotificationBuilder = NotificationCompat.Builder(this, METRICS_CHANNEL_ID)
+        metricsNotificationBuilder = NotificationCompat.Builder(this, NotificationHelper.CHANNEL_POWER)
             .setContentTitle("Battery $label: $txtValue$displayUnits")
             .setContentText(
                 when (val seconds = snapshot.secondsUntilCharged) {
@@ -322,32 +326,6 @@ class BatteryService : Service() {
         canvas.drawText(unit, w / 2f, w.toFloat(), paint)
 
         return IconCompat.createWithBitmap(bitmap)
-    }
-
-    private fun createMetricsNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                METRICS_CHANNEL_ID,
-                "Power Status",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            channel.description = "Optional live status bar indicator showing real-time battery power draw"
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Battery Events",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            channel.description = "Channel for battery event notifications"
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

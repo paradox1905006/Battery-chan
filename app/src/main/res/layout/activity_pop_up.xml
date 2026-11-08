@@ -9,13 +9,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        app:cardBackgroundColor="@color/oni_card_bg"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
         app:cardCornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/oni_accent"
+        app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +31,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Video events play here (TextureView so it is clipped by the rounded card). -->
+            <TextureView
+                android:id="@+id/tv_event_video"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -81,7 +88,7 @@
                 android:layout_height="64dp"
                 android:layout_margin="32dp"
                 android:text="Dismiss"
-                android:textColor="@color/oni_accent"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="18sp"
                 app:cornerRadius="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"

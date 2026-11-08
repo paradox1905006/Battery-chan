@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.BatteryChan.SectionHeader" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelLarge</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Applied on top of the dark theme for the pure-black (AMOLED) option. -->
+    <style name="ThemeOverlay.BatteryChan.Black" parent="">
+        <item name="android:colorBackground">@color/amoled_surface</item>
+        <item name="colorSurface">@color/amoled_surface</item>
+        <item name="colorSurfaceDim">@color/amoled_surface</item>
+        <item name="colorSurfaceContainerLowest">@color/amoled_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/amoled_container_low</item>
+        <item name="colorSurfaceContainer">@color/amoled_container</item>
+        <item name="colorSurfaceContainerHigh">@color/amoled_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/amoled_container_highest</item>
+        <item name="android:windowBackground">@color/amoled_surface</item>
+    </style>
+</resources>

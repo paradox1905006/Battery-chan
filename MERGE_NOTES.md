@@ -42,3 +42,14 @@ alongside it.
   Chan's service already runs in the main process.
 - Wattz's own UI shell/theme — Battery Chan's Material 3 dark theme is used
   throughout instead.
+
+## v9 — speed meter fixes
+- Status bar icon: the speed notification now draws "download / upload" as a two-line icon (like 16K / 4K) in the status bar.
+- Auto colour (on by default): the speed text takes the most prominent bright colour of the whole video (e.g. Miku teal hair). Switch it off in Settings to use a fixed colour.
+- Speed meter in the mini player: bigger touch area, drag to move, pinch with two fingers on the meter to resize it.
+- Speed-only service no longer stops when the mini player has an empty playlist; unit (bytes/bits) is applied in notification-only mode too.
+- Turning on "Show in the notification panel" asks for notification permission on Android 13+.
+
+## v11
+- The status bar speed icon is now its own ongoing notification (channel "Speed meter"), built exactly like the power indicator, instead of the icon of the foreground-service notification.
+- Pinching the speed meter inside the mini player now really resizes the meter (before, the player's own pinch grabbed the gesture first). Size range 8-40 sp. If the text does not fit on one line it wraps into two lines (down above up) before it shrinks.

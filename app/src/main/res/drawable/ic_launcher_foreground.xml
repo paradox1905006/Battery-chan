@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icons only show the centre ~66% (72dp of 108dp) after the launcher mask is
+     applied, so the full-bleed logo is inset to keep it from being cropped. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/logo_png"
+    android:inset="20%" />

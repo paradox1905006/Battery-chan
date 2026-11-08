@@ -1,28 +1,55 @@
 package com.tg.batterychan.ui
 
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.SurfaceTexture
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.view.Surface
+import android.view.TextureView
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
+import android.widget.ImageView
+import com.tg.batterychan.data.Prefs
 import com.tg.batterychan.databinding.ActivityPopUpBinding
+import com.tg.batterychan.util.EventAudioPlayer
+import com.tg.batterychan.util.ImageLoader
+import com.tg.batterychan.util.Media
+import com.tg.batterychan.util.MediaKind
 import java.io.File
+import kotlin.math.max
+import kotlin.math.min
 
-class PopUpActivity : AppCompatActivity() {
+class PopUpActivity : BaseActivity() {
+
+    // How the picture / video fills the card. Chosen per event in Settings (Prefs.SCALE_*).
+    private var scaleMode = Prefs.SCALE_FILL
 
     private lateinit var binding: ActivityPopUpBinding
-    private lateinit var prefs: com.tg.batterychan.data.Prefs
-    private var mediaPlayer: android.media.MediaPlayer? = null
-    private var originalVolume: Int = -1
-    private lateinit var audioManager: android.media.AudioManager
+    private lateinit var prefs: Prefs
+    private lateinit var audioPlayer: EventAudioPlayer
+    private val dismissRunnable = Runnable { if (!isFinishing) stopAndFinish() }
+
+    // Video playback (only used when the event's media is a video).
+    private var videoPath: String? = null
+    private var videoMuted = false
+    private var videoPlayer: MediaPlayer? = null
+    private var videoSurface: Surface? = null
+
+    // The pop-up manages its own full-screen window.
+    override val useEdgeToEdge: Boolean get() = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = com.tg.batterychan.data.Prefs(this)
-        audioManager = getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
-        
+        prefs = Prefs(this)
+        audioPlayer = EventAudioPlayer(this)
+
         try {
-            // Full screen setup
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.setDecorFitsSystemWindows(false)
             } else {
@@ -34,122 +61,200 @@ class PopUpActivity : AppCompatActivity() {
             }
 
             // Show over lockscreen and turn screen on
-            @Suppress("DEPRECATION")
             setShowWhenLocked(true)
-            @Suppress("DEPRECATION")
             setTurnScreenOn(true)
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
             binding = ActivityPopUpBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // Hide system bars after content is set
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 binding.root.post {
                     window.insetsController?.let {
-                        it.hide(android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.navigationBars())
-                        it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                        it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                        it.systemBarsBehavior =
+                            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                     }
                 }
             }
 
-            val eventTitle = intent.getStringExtra("event_title") ?: "Battery Event"
-            val imagePath = intent.getStringExtra("image_path")
-            val audioPath = intent.getStringExtra("audio_path")
-            val customText = intent.getStringExtra("custom_text")
-            val duration = intent.getIntExtra("duration", 10)
+            binding.tvEventVideo.isOpaque = false // poster frame sits underneath, same fit as the video
+            binding.tvEventVideo.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+                override fun onSurfaceTextureAvailable(st: SurfaceTexture, width: Int, height: Int) {
+                    startVideoIfReady()
+                }
 
-            binding.tvEventTitle.text = eventTitle
-            binding.tvCustomMessage.text = customText
-            binding.tvCustomMessage.visibility = if (customText.isNullOrEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+                override fun onSurfaceTextureSizeChanged(st: SurfaceTexture, width: Int, height: Int) {
+                    applyVideoFit()
+                }
 
-            if (imagePath != null && File(imagePath).exists()) {
-                Glide.with(this)
-                    .load(imagePath)
-                    .centerCrop()
-                    .into(binding.ivEventImage)
+                override fun onSurfaceTextureDestroyed(st: SurfaceTexture): Boolean {
+                    releaseVideoPlayer()
+                    return true
+                }
+
+                override fun onSurfaceTextureUpdated(st: SurfaceTexture) {}
             }
 
-            if (audioPath != null && File(audioPath).exists()) {
-                // Save original volume and set to max only if we have audio to play
-                originalVolume = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
-                val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
-                audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, maxVolume, 0)
-
-                playAudio(audioPath)
-            }
-
-            binding.btnDismiss.setOnClickListener {
-                stopAndFinish()
-            }
-
-            binding.root.postDelayed({
-                if (!isFinishing) stopAndFinish()
-            }, duration * 1000L)
-            
+            binding.btnDismiss.setOnClickListener { stopAndFinish() }
+            showEvent(intent)
         } catch (e: Exception) {
             e.printStackTrace()
             finish()
         }
     }
 
-    private fun playAudio(path: String) {
-        try {
-            mediaPlayer = android.media.MediaPlayer().apply {
-                setDataSource(path)
-                setAudioAttributes(
-                    android.media.AudioAttributes.Builder()
-                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setVolume(1.0f, 1.0f) // Maximize internal player volume
-                prepare()
-                start()
-                setOnCompletionListener {
-                    restoreVolume()
-                    if (prefs.isAutoDismissOnAudio()) {
-                        stopAndFinish()
-                    }
-                }
+    /**
+     * The pop-up is singleTop, so a second event arriving while it is open lands here.
+     * Show the newest event and replace (not overlap) the sound.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        showEvent(intent)
+    }
+
+    private fun showEvent(intent: Intent) {
+        val eventTitle = intent.getStringExtra("event_title") ?: "Battery Event"
+        val imagePath = intent.getStringExtra("image_path")
+        val audioPath = intent.getStringExtra("audio_path")
+        val customText = intent.getStringExtra("custom_text")
+        val duration = intent.getIntExtra("duration", 10)
+        scaleMode = intent.getIntExtra("scale_mode", Prefs.SCALE_FILL)
+
+        binding.tvEventTitle.text = eventTitle
+        binding.tvCustomMessage.text = customText
+        binding.tvCustomMessage.visibility =
+            if (customText.isNullOrEmpty()) View.GONE else View.VISIBLE
+
+        releaseVideoPlayer()
+        videoPath = null
+        binding.ivEventImage.visibility = View.VISIBLE
+        // The poster frame / image uses the same fit as the video, so there is no jump.
+        binding.ivEventImage.scaleType = when (scaleMode) {
+            Prefs.SCALE_STRETCH -> ImageView.ScaleType.FIT_XY
+            Prefs.SCALE_FIT -> ImageView.ScaleType.FIT_CENTER
+            else -> ImageView.ScaleType.CENTER_CROP
+        }
+        binding.ivEventImage.setBackgroundColor(if (scaleMode == Prefs.SCALE_FIT) Color.BLACK else Color.TRANSPARENT)
+
+        if (imagePath != null && File(imagePath).exists()) {
+            // Image / GIF: ImageLoader animates GIFs. Video: ImageLoader shows the poster
+            // frame while the video below starts up.
+            ImageLoader.load(binding.ivEventImage, imagePath, 1600)
+
+            if (Media.kindOf(imagePath) == MediaKind.VIDEO) {
+                videoPath = imagePath
+                // If the event has its own sound, keep the video silent so they don't clash.
+                videoMuted = audioPath != null && File(audioPath).exists()
+                binding.tvEventVideo.visibility = View.VISIBLE
+                startVideoIfReady()
+            } else {
+                binding.tvEventVideo.visibility = View.GONE
             }
+        } else {
+            ImageLoader.clear(binding.ivEventImage)
+            binding.tvEventVideo.visibility = View.GONE
+        }
+
+        // play() stops whatever was playing, so there is only ever one sound.
+        if (audioPath != null && File(audioPath).exists()) {
+            audioPlayer.play(audioPath, prefs.isBoostVolume()) {
+                if (prefs.isAutoDismissOnAudio()) stopAndFinish()
+            }
+        } else {
+            audioPlayer.stop()
+        }
+
+        binding.root.removeCallbacks(dismissRunnable)
+        binding.root.postDelayed(dismissRunnable, duration * 1000L)
+    }
+
+    /** Starts the looping video once the TextureView has a surface (and a video is wanted). */
+    private fun startVideoIfReady() {
+        val path = videoPath ?: return
+        val view = binding.tvEventVideo
+        val texture = view.surfaceTexture ?: return
+        if (!view.isAvailable) return
+
+        releaseVideoPlayer()
+        try {
+            val surface = Surface(texture)
+            videoSurface = surface
+            val mp = MediaPlayer()
+            videoPlayer = mp
+            mp.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            mp.setDataSource(path)
+            mp.setSurface(surface)
+            mp.isLooping = true
+            if (videoMuted) mp.setVolume(0f, 0f)
+            mp.setOnVideoSizeChangedListener { _, _, _ -> applyVideoFit() }
+            mp.setOnPreparedListener {
+                applyVideoFit()
+                it.start()
+            }
+            mp.setOnErrorListener { _, _, _ ->
+                releaseVideoPlayer() // poster frame stays visible
+                true
+            }
+            mp.prepareAsync()
         } catch (e: Exception) {
-            e.printStackTrace()
+            releaseVideoPlayer()
         }
     }
 
-    private fun restoreVolume() {
-        if (originalVolume != -1) {
-            audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, originalVolume, 0)
-            originalVolume = -1
+    /**
+     * TextureView stretches the video to its own bounds by default, which is exactly
+     * [Prefs.SCALE_STRETCH]. For fill / fit the content is scaled back to the real aspect ratio.
+     */
+    private fun applyVideoFit() {
+        val mp = videoPlayer ?: return
+        val view = binding.tvEventVideo
+        val vw = mp.videoWidth
+        val vh = mp.videoHeight
+        val w = view.width
+        val h = view.height
+        if (vw <= 0 || vh <= 0 || w <= 0 || h <= 0) return
+
+        val matrix = Matrix()
+        if (scaleMode != Prefs.SCALE_STRETCH) {
+            val sx = w.toFloat() / vw
+            val sy = h.toFloat() / vh
+            val scale = if (scaleMode == Prefs.SCALE_FIT) min(sx, sy) else max(sx, sy)
+            matrix.setScale(vw * scale / w, vh * scale / h, w / 2f, h / 2f)
         }
+        view.setTransform(matrix)
+    }
+
+    private fun releaseVideoPlayer() {
+        videoPlayer?.let {
+            try {
+                it.stop()
+            } catch (_: Exception) {
+            }
+            it.release()
+        }
+        videoPlayer = null
+        videoSurface?.release()
+        videoSurface = null
     }
 
     private fun stopAndFinish() {
-        try {
-            mediaPlayer?.let {
-                if (it.isPlaying) it.stop()
-                it.release()
-            }
-            restoreVolume()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        mediaPlayer = null
+        audioPlayer.stop()
+        releaseVideoPlayer()
         finish()
     }
 
     override fun onDestroy() {
-        try {
-            mediaPlayer?.let {
-                if (it.isPlaying) it.stop()
-                it.release()
-            }
-            restoreVolume()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        mediaPlayer = null
+        if (::binding.isInitialized) binding.root.removeCallbacks(dismissRunnable)
+        if (::audioPlayer.isInitialized) audioPlayer.stop()
+        releaseVideoPlayer()
+        if (::binding.isInitialized) ImageLoader.clear(binding.ivEventImage)
         super.onDestroy()
     }
 }

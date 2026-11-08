@@ -1,0 +1,26 @@
+# Draft for https://gitlab.com/fdroid/fdroiddata  ->  metadata/com.tg.batterychan.yml
+# Replace the REPLACE_ME values before submitting.
+Categories:
+  - System
+License: MIT
+AuthorName: Paradox
+SourceCode: https://github.com/REPLACE_ME/Battery-chan
+IssueTracker: https://github.com/REPLACE_ME/Battery-chan/issues
+
+AutoName: Battery Chan
+
+RepoType: git
+Repo: https://github.com/REPLACE_ME/Battery-chan.git
+
+Builds:
+  - versionName: 1.1.0
+    versionCode: 110
+    commit: v1.1.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.1.0
+CurrentVersionCode: 110
